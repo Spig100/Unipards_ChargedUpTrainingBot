@@ -4,7 +4,11 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.motorcontrol.Victor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -19,6 +23,26 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+
+
+  // Controller Define (for Xbox Controller)
+  // "port:" is set in the Driver Station
+  private final XboxController driver = new XboxController(0);
+  private final XboxController operator = new XboxController(1);
+
+  // Motor Controller Define
+  // "deviceNumber:" the CAN Bus ID of Victor SPX Motor Controller
+  // For the introduction of CAN Bus, pls visit: https://en.wikipedia.org/wiki/CAN_bus
+
+  // Chassis
+  private final VictorSPX motor_chassis_left_1 = new VictorSPX(1);
+  private final VictorSPX motor_chassis_left_2 = new VictorSPX(2);
+  private final VictorSPX motor_chassis_right_1 = new VictorSPX(3);
+  private final VictorSPX motor_chassis_right_2 = new VictorSPX(4);
+
+  // Payloads
+  private final VictorSPX motor_arm = new VictorSPX(5);
+  private final VictorSPX motor_claw = new VictorSPX(6);
 
   /**
    * This function is run when the robot is first started up and should be used for any
