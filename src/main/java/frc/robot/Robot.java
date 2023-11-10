@@ -5,10 +5,12 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.motorcontrol.Victor;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -35,14 +37,23 @@ public class Robot extends TimedRobot {
   // For the introduction of CAN Bus, pls visit: https://en.wikipedia.org/wiki/CAN_bus
 
   // Chassis
-  private final VictorSPX motor_chassis_left_1 = new VictorSPX(1);
-  private final VictorSPX motor_chassis_left_2 = new VictorSPX(2);
-  private final VictorSPX motor_chassis_right_1 = new VictorSPX(3);
-  private final VictorSPX motor_chassis_right_2 = new VictorSPX(4);
+  private final WPI_VictorSPX motor_chassis_left_1 = new WPI_VictorSPX(1);
+  private final WPI_VictorSPX motor_chassis_left_2 = new WPI_VictorSPX(2);
+  private final WPI_VictorSPX motor_chassis_right_1 = new WPI_VictorSPX(3);
+  private final WPI_VictorSPX motor_chassis_right_2 = new WPI_VictorSPX(4);
+
+  private final MotorControllerGroup motor_chassis_left = new MotorControllerGroup(motor_chassis_left_1, motor_chassis_left_2);
+  private final MotorControllerGroup motor_chassis_right = new MotorControllerGroup(motor_chassis_right_1, motor_chassis_right_2);
+
+  private final DifferentialDrive chassis = new DifferentialDrive(motor_chassis_left, motor_chassis_right);
 
   // Payloads
   private final VictorSPX motor_arm = new VictorSPX(5);
   private final VictorSPX motor_claw = new VictorSPX(6);
+
+  // Constants
+  private final double kChassisFactorXSpeed = 0.5;
+  private final double kChassisFactorZRotation = 0.7;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -53,6 +64,8 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    
+    motor_chassis_right.setInverted(true);
   }
 
   /**
@@ -98,11 +111,18 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+    System.out.println("TeleOperation Initialized Successfully.");
+  }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    double x_speed = -driver.getLeftX() * kChassisFactorXSpeed;
+    double z_rotation = -driver.getRightY() * kChassisFactorZRotation;
+    chassis.arcadeDrive(x_speed, z_rotation);
+
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override
