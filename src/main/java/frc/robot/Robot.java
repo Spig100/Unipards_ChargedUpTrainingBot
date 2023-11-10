@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.WPI_VictorSPX;
 
@@ -54,6 +55,8 @@ public class Robot extends TimedRobot {
   // Constants
   private final double kChassisFactorXSpeed = 0.5;
   private final double kChassisFactorZRotation = 0.7;
+  private final double kClawPercentage = 0.8;
+  private final double kArmPercentage = 0.6;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -118,10 +121,32 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    // Chassis operation
     double x_speed = -driver.getLeftX() * kChassisFactorXSpeed;
     double z_rotation = -driver.getRightY() * kChassisFactorZRotation;
     chassis.arcadeDrive(x_speed, z_rotation);
 
+    // Arm operation
+    if (operator.getPOV(0) == 1){
+      motor_arm.set(VictorSPXControlMode.PercentOutput, -kArmPercentage);
+    }
+    else if (operator.getPOV(180) == 1){
+      motor_arm.set(VictorSPXControlMode.PercentOutput, kArmPercentage);
+    }
+    else{
+      motor_arm.set(VictorSPXControlMode.PercentOutput, 0);
+    }
+
+    // Claw operation
+    if (operator.getAButton()){
+      motor_claw.set(VictorSPXControlMode.PercentOutput, kClawPercentage);
+    }
+    else if (operator.getBButton()){
+      motor_claw.set(VictorSPXControlMode.PercentOutput, -kClawPercentage);
+    }
+    else{
+      motor_claw.set(VictorSPXControlMode.PercentOutput, 0);
+    }
   }
 
   /** This function is called once when the robot is disabled. */
