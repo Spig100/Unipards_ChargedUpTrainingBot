@@ -38,6 +38,7 @@ public class Robot extends TimedRobot {
   // For the introduction of CAN Bus, pls visit: https://en.wikipedia.org/wiki/CAN_bus
 
   // Chassis
+  // The CAN Bus ID should be modified as shown:
   private final WPI_VictorSPX motor_chassis_left_1 = new WPI_VictorSPX(1);
   private final WPI_VictorSPX motor_chassis_left_2 = new WPI_VictorSPX(2);
   private final WPI_VictorSPX motor_chassis_right_1 = new WPI_VictorSPX(3);
@@ -54,7 +55,7 @@ public class Robot extends TimedRobot {
 
   // Constants
   private final double kChassisFactorXSpeed = 0.5;
-  private final double kChassisFactorZRotation = 0.7;
+  private final double kChassisFactorZRotation = 0.6;
   private final double kClawPercentage = 0.8;
   private final double kArmPercentage = 0.6;
 
@@ -122,15 +123,15 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     // Chassis operation
-    double x_speed = -driver.getLeftX() * kChassisFactorXSpeed;
-    double z_rotation = -driver.getRightY() * kChassisFactorZRotation;
+    double x_speed = -driver.getLeftY() * kChassisFactorXSpeed;
+    double z_rotation = -driver.getRightX() * kChassisFactorZRotation;
     chassis.arcadeDrive(x_speed, z_rotation);
 
     // Arm operation
-    if (operator.getPOV(0) == 1){
+    if (operator.getXButton()){
       motor_arm.set(VictorSPXControlMode.PercentOutput, -kArmPercentage);
     }
-    else if (operator.getPOV(180) == 1){
+    else if (operator.getYButton()){
       motor_arm.set(VictorSPXControlMode.PercentOutput, kArmPercentage);
     }
     else{
